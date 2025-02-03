@@ -1,0 +1,253 @@
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f4f4f9;
+    color: #333;
+    overflow: auto; /* Allow scrolling */
+
+}
+
+h1 {
+    text-align: center;
+    color: #ede2e2;
+    white-space: nowrap; /* Prevent wrapping */
+    overflow: hidden; /* Hide the text initially */
+    border-right: 4px solid #ede2e2; /* Add a typing cursor effect */
+    animation: typing 3s steps(40, end) forwards, /* Typing animation */
+               blink-caret .75s step-end infinite; /* Cursor blinking animation */
+    font-size: 2em; /* Example font size - adjust as needed */
+  }
+  
+  
+  @keyframes typing {
+    from { width: 0 }
+    to { width: 100% } /* Or a specific width if needed */
+  }
+  
+  @keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: #ede2e2; }
+  }
+  
+  /* Optional: Fade-in effect alongside typing */
+  h1 {
+    opacity: 0; /* Initially hidden */
+    animation: fadeIn 1s ease-in-out forwards; /* Apply fade-in */
+  }
+  
+  @keyframes fadeIn {
+      to {
+          opacity: 1;
+      }
+  }
+  
+#search-input {
+    padding: 10px;
+    width: 200px;
+    border: 1px solid #d67070;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+#search-input:hover {
+    border-color: #ff0000; /* Change border color on hover */
+    background-color: #ffe6e6; /* Change background color on hover */
+}
+
+#search-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#search-button:hover {
+    background-color: #0056b3;
+}
+
+#filings-container {
+    margin-top: 20px;
+}
+
+.filing {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filing h2 {
+    margin-top: 0;
+    color: #007bff;
+}
+
+.filing p {
+    margin: 5px 0;
+}
+
+.filing a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.filing a:hover {
+    text-decoration: underline;
+}
+
+canvas {
+    display: block;
+    margin: 0 auto;
+}
+
+/* 1 */
+/* logo timis */
+.logo {
+    max-width: 45px;
+    transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+}
+
+.logo:hover {
+    transform: scale(1.01); /* Slightly enlarge the logo on hover */
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.6)); /* Apply glow tightly around the logo */
+}
+
+/* cards */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    background: #322a2a;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1800px; /* Increase perspective for a stronger 3D effect */
+}
+
+
+
+.card {
+    position: absolute;
+    width: 300px; /* Adjusted width */
+    height: 400px; /* Adjusted height */
+    left: 50%;
+    top: 100%; /* Start from below the view */
+    transform: translate(-50%, 100%) rotateX(0deg) translateZ(0px);
+    background: rgba(255, 255, 255, 0.05); /* Make the card more transparent */
+    border-radius: 20px;
+    padding: 20px;
+    transition: transform 0.3s ease-out, top 0.5s ease-out, opacity 0.5s ease-out;
+    transform-style: preserve-3d;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5); /* Enhanced shadow for depth */
+    opacity: 0; /* Start with invisible cards */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Semi-transparent border */
+    backdrop-filter: blur(10px); /* Apply blur to the background */
+    -webkit-backdrop-filter: blur(10px); /* Safari support */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform-style: preserve-3d; /* Ensure the card and its content preserve 3D transforms */
+}
+
+.card.visible {
+    top: 50%; /* Move to the center */
+    transform: translate(-50%, -50%) rotateX(-10deg) rotateY(10deg) translateZ(0px); /* Tilt back and curve when visible */
+    opacity: 1; /* Make the card visible */
+}
+
+.card.visible .image-container {
+    transform: translateZ(100px) scale(1.2); /* Move and enlarge the image for a more obvious pop-out */
+    transition: transform 0.5s ease-out;
+}
+
+.image-container {
+    width: 100px; /* Adjusted width */
+    height: 100px; /* Adjusted height */
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 20px;
+    z-index: 2; /* Ensure it's above the card background */
+}
+
+.card img {
+    width: 100%;
+    height: 100%; /* Ensure images fit within the container */
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    display: none; /* Hidden by default */
+    position: relative;
+    z-index: 3; /* Above the image container */
+    transform: translateZ(0px); /* Initial position */
+    transition: transform 0.3s ease-out, filter 0.3s ease-out;
+    filter: contrast(1.5) brightness(1.2) saturate(1.5) drop-shadow(0 10px 10px rgba(0, 0, 0, 0.5));
+}
+
+.card img.visible {
+    display: block; /* Show the image when it has the 'visible' class */
+    transform: translateZ(50px); /* Move the image outwards */
+}
+
+.card img::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 5px solid transparent;
+    border-radius: 10px;
+    box-sizing: border-box;
+    z-index: -1;
+    animation: borderAnimation 2s linear infinite;
+}
+
+@keyframes borderAnimation {
+    0% {
+        border-color: transparent;
+    }
+    50% {
+        border-color: #fff;
+    }
+    100% {
+        border-color: transparent;
+    }
+}
+
+.card-content {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.card h2 {
+    margin-top: 20px; /* Add margin to separate the text from the image */
+    text-align: center;
+}
+
+.card p {
+    margin-top: 10px; /* Add margin to separate the text from the heading */
+    text-align: center;
+}
+
+
+
