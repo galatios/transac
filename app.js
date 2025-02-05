@@ -211,40 +211,85 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-// insiders transaction
+// avaScript Code to Extract Insider Transactions
 
-    async function fetchInsiderTransactions(apiUrl) {
-        const insidersContainer = document.getElementById('insiders-container');
-        insidersContainer.innerHTML = '<p>Loading insiders transactions…</p>';
-        try {
-            const response = await fetch(apiUrl, {
-                headers: {
-                    'User-Agent': 'your-app-name (your-email@example.com)'
-                }
-            });
-            if (!response.ok) {
-                throw new Error(`Network response was not ok: ${response.status}`);
+async function fetchInsiderTransactions() {
+    // URL for a SEC Form 4 filing (Amazon in this example)
+    const apiUrl = 'https://www.sec.gov/Archives/edgar/data/1018724/000101872424000202/wk-form4_1733955046.xml';
+    const insidersContainer = document.getElementById('insiders-container');
+    insidersContainer.innerHTML = '<p>Loading insider transactions…</p>';
+
+    try {
+        const response = await fetch(apiUrl, {
+            headers: {
+                'User-Agent': 'your-app-name (your-email@example.com)' // SEC requires a custom User-Agent
             }
-            const insiderData = await response.json();
-            displayInsiderTransactions(insiderData);
-        } catch (error) {
-            console.error('Error fetching insider transactions:', error);
-            insidersContainer.innerHTML = `<p>Error loading insiders data: ${error.message}</p>`;
+        });
+
+        if (!response.ok) {
+            throw new Error(`Network response was not ok: ${response.status}`);
         }
+
+        const xmlText = await response.text();
+        displayRawXml(xmlText);
+    } catch (error) {
+        console.error('Error fetching insider transactions:', error);
+        insidersContainer.innerHTML = `<p>Error loading insider data: ${error.message}</p>`;
     }
+}
+
+function displayRawXml(xmlText) {
+    const insidersContainer = document.getElementById('insiders-container');
+    insidersContainer.innerHTML = ''; // Clear any existing content
+    const preElement = document.createElement('pre');
+    preElement.textContent = xmlText; // Safely insert raw text content
+    insidersContainer.appendChild(preElement);
+}
+
+function parseInsiderTransactions(xmlDoc) {
+    const transactions = [];
+
+    // Extract insider name
+    const insiderName = xmlDoc.querySelector("reportingOwner reportingOwnerId rptOwnerName")?.textContent || "Unknown";
+
+    // Extract transactions from <nonDerivativeTable>
+    const nonDerivativeTransactions = xmlDoc.querySelectorAll("nonDerivativeTransaction");
+
+    nonDerivativeTransactions.forEach(transaction => {
+        const date = transaction.querySelector("transactionDate value")?.textContent || "N/A";
+        const type = transaction.querySelector("transactionCoding transactionCode")?.textContent || "N/A";
+        const shares = transaction.querySelector("transactionAmounts transactionShares value")?.textContent || "N/A";
+        const price = transaction.querySelector("transactionAmounts transactionPricePerShare value")?.textContent || "N/A";
+
+        transactions.push({ date, type, shares, price, insiderName });
+    });
+
+    return transactions;
+}
 
     function displayInsiderTransactions(insiderData) {
-        const insidersContainer = document.getElementById('insiders-container');
-        insidersContainer.innerHTML = '';
-        // Process insiderData to extract and display transactions.
+        const tableBody = document.querySelector('#insider-transactions-table tbody');
+        tableBody.innerHTML = ''; // Clear existing content
+
         insiderData.forEach((transaction) => {
-            const transactionElement = document.createElement('div');
-            transactionElement.className = 'insider-transaction';
-            transactionElement.innerHTML = `
-                <h2>${transaction.name}</h2>
-                <p>${transaction.details}</p>
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${transaction.transactionCode}</td>
+                <td>${transaction.share}</td>
+                <td>${transaction.transactionPrice}</td>
+                <td>${transaction.transactionDate}</td>
             `;
-            insidersContainer.appendChild(transactionElement);
+            tableBody.appendChild(row);
         });
     }
 });
+
+//  hide logo on scroll
+    window.addEventListener('scroll', function() {
+        const navbarBrand = document.getElementById('navbarBrand');
+        if (window.scrollY > 50) {
+            navbarBrand.style.display = 'none';
+        } else {
+            navbarBrand.style.display = 'inline';
+        }
+    });

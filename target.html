@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Price Target Search</title>
+    <link rel="stylesheet" href="styles.css">
+     <!-- Bootstrap CSS -->
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+     <!-- Font Awesome -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+     <!-- Google Fonts -->
+     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Work+Sans:wght@600&display=swap" rel="stylesheet">
+     <!-- favicon -->
+     <link rel="shortcut icon" href="assets/fav.ico" type="image/x-icon">
+</head>
+<body>
+<!-- Header Section -->
+<header class="header-container">
+    <nav class="navbar navbar-dark bg-transparent fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeftNavbar" aria-controls="offcanvasLeftNavbar">
+                    <img src="images/logo.png" alt="Logo" class="logo">
+                
+                <span class="ms-2 fw-bold" id="navbarBrand"></span>
+            </a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<!-- Offcanvas Menu -->
+<div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="offcanvasLeftNavbar" aria-labelledby="offcanvasLeftNavbarLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasLeftNavbarLabel">Menu</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ul class="navbar-nav justify-content-start flex-grow-1 pe-3">
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="https://babankltd.com/">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="fda-meetings.html">Services</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Dropdown
+        </a>
+        <ul class="dropdown-menu dropdown-menu-dark">
+          <li><a class="dropdown-item" href="#">Action</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="#">Something else here</a></li>
+        </ul>
+      </li>
+    </ul>
+    </div>
+    
+</div>
+
+  <!-- Search Bar -->
+  <div class="container">
+    <div class="search-container">
+      <h2>Stock Price Target Search</h2>
+      <form id="searchForm" class="d-flex mt-3" role="search">
+        <input
+          id="searchInput"
+          class="form-control me-2"
+          type="text"
+          placeholder="Enter stock ticker (e.g., AAPL)"
+          aria-label="Search"
+        />
+        <button class="btn btn-primary" type="submit">
+          <i class="fas fa-search"></i> Search
+        </button>
+      </form>
+      <div id="searchResults" class="mt-3"></div>
+    </div>
+  </div>
+
+
+<!-- Include Bootstrap Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+<!-- target script: search engine integration -->
+<script>
+  // Attach the event listener once the DOM elements are loaded.
+  document.getElementById('searchForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const searchInput = document.getElementById('searchInput').value.trim();
+    const results = document.getElementById('searchResults');
+    
+    if (!searchInput) {
+      results.innerHTML = '<div class="alert alert-warning">Please enter a symbol</div>';
+      return;
+    }
+
+    results.innerHTML = '<div class="spinner-border text-primary" role="status"></div>';
+
+    try {
+      const response = await fetch(`/api/price-target?symbol=${encodeURIComponent(searchInput)}`);
+      console.log('API Request:', `/api/price-target?symbol=${searchInput}`);
+      
+      if (!response.ok) throw new Error(await response.text());
+      
+      const data = await response.json();
+      console.log('API Response:', data);
+      
+      if (data.error) {
+        results.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+        return;
+      }
+      
+      // Format and display each target from the API response.
+      results.innerHTML = data.map(item => `
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title">${item.symbol}</h5>
+            <p class="card-text">
+              Price Target: $${item.priceTarget}<br>
+              Published: ${new Date(item.publishedDate).toLocaleDateString()}
+            </p>
+          </div>
+        </div>
+      `).join('');
+    } catch (error) {
+      console.error('Fetch Error:', error.message);
+      results.innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
+    }
+  });
+
+  
+//   // Optional: Hide or show the navbar brand on scroll.
+//   window.addEventListener('scroll', function() {
+//     const navbarBrand = document.getElementById('navbarBrand');
+//     if (window.scrollY > 50) {
+//       navbarBrand.style.display = 'none';
+//     } else {
+//       navbarBrand.style.display = 'inline';
+//     }
+//   });
+
+</script>
+
+
+<!-- <script src="server.js"></script> -->
+
+</body>
+</html>
